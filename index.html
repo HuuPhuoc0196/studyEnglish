@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	<title>Ôn từ vựng</title>
+	<style>  
+		.bg-color{
+			background-color: #8BC34A;
+		} 
+		.p-title{
+			text-align: center;
+			padding: 5px;
+			font-size: 30px;
+			font-weight: 800;
+			color: aqua;
+		}
+		.btn-addfile{
+			padding: 10px;
+			background-color: mediumaquamarine;
+			color: maroon;
+			border-radius: 5px;
+			border-bottom: 1px solid black;
+		}
+		.div-left{
+			float: left;
+		}
+		.div-right{
+			float: right;
+		}
+		.div-content{
+			float: unset;
+			padding-top: 50px;
+			padding-bottom: 150px;
+		}
+		table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+		th {
+			height: 20px;
+			text-align: left;
+		}
+		td {
+			height: 20px;
+			vertical-align: bottom;
+		}
+		th, td {
+			padding: 5px;
+			text-align: left;
+			border-bottom: 1px solid #ddd;
+		}
+		table, th, td {
+			border: 1px solid black;
+		}
+		.td-input{
+			width: 95%;
+			min-width: 200px;
+		}
+		.td-30{
+			width: 30%;
+		}
+		.td-10{
+			width: 10%;
+		}
+		.speaker-icon {
+	      width: 15px;
+	      height: 15px;
+	      background-color: #ddd;
+	      border-radius: 50%;
+	      text-align: center;
+	    }
+	    .btn-speek {
+	    	margin-left: 10px;
+	    }
+
+	</style>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">  </script>    
+	<script type="text/javascript">
+
+	// Kiểm tra xem trình duyệt có hỗ trợ SpeechSynthesis không
+	if (!('speechSynthesis' in window)) alert("Trình duyệt của bạn không hỗ trợ SpeechSynthesis."); 
+		var result = [];
+		var resultLines;
+		var arrayColor = ['aquamarine', 'beige', 'aliceblue', 'burlywood', 'darkgray', 'lightblue'];
+		var speechArray = [];
+		function shuffleArr (array){
+			for (var i = array.length - 1; i > 0; i--) {
+				var rand = Math.floor(Math.random() * (i + 1));
+				[array[i], array[rand]] = [array[rand], array[i]]
+			}
+		}
+		var openFile = function(event) {
+			var input = event.target;
+			var reader = new FileReader();
+			reader.onload = function() {
+				result = [];
+				var text = reader.result;
+				resultLines = text.split('\n');
+				shuffleArr(resultLines);
+				readData(resultLines);
+			};
+			reader.readAsText(input.files[0]);
+		};
+
+		function removeText(item, no){
+			item.parentNode.innerHTML = '<button class="btn-addfile" onclick="checkItem(this, '+no+')">Kiểm tra</button>';
+		}
+
+		function checkItem(item, no){
+			var buttonRemoveText = '<button class="btn-addfile" onclick="removeText(this, '+no+')" style="float: right;">Remove text</button>'
+			item.parentNode.innerHTML = result[no-1] + buttonRemoveText;
+		}
+		function checkAllItem(){
+			var rows = document.getElementsByTagName("table")[0].rows;
+			for (var line = 1; line < rows.length; line++) {
+				rows[line].childNodes[2].innerHTML = result[line-1]
+			}
+		}
+		function readData(lines){
+			$(table).find('tbody').text('');
+			var initTable = '<tr><th>No</th><th>English</th><th>Result</th></tr>';
+			$(table).find('tbody').append(initTable);
+			var no = 0;
+			for (var line = 0; line < lines.length; line++) {
+				let arr = lines[line].split(':');
+				if(arr.length > 1){
+					no++;
+					let textCheck = arr[0].trim();
+					textCheck = textCheck.charAt(0).toUpperCase() + textCheck.slice(1);
+					let textResult = arr[1].trim();
+					textResult = textResult.charAt(0).toUpperCase() + textResult.slice(1);
+					var numberColor = Math.floor(Math.random() * 6);
+					speechArray[line] = textCheck;
+					var functionSpeek = "convertTextToSpeech('"+line+"')";
+					var btnCheck = '<button class="btn-addfile" onclick="checkItem(this, '+no+')">Kiểm tra</button>';
+					var btnSpeek = '<button class="btn-speek" onclick="'+functionSpeek+'"><i class="fas fa-volume-up"></i><span class="speaker-icon"></button>';
+					var trLine = '<tr style="background-color: '+arrayColor[numberColor]+';">' +
+					'<td class="td-10">'+no+'</td>'+
+					'<td class="td-30">'+textCheck+btnSpeek+'</td>' +
+					'<td class="td-30">'+btnCheck+'</td></tr>';
+					$(table).find('tbody').append(trLine);
+					result.push(textResult);
+
+				}
+			}
+		}
+
+	  	// Một hàm để chuyển đổi văn bản thành âm thanh
+	  	function convertTextToSpeech(line) {
+			// Tạo một đối tượng SpeechSynthesisUtterance
+			var speech = new SpeechSynthesisUtterance();
+
+			// Thiết lập ngôn ngữ cho đoạn văn bản (ở đây là tiếng Anh)
+			speech.lang = 'en-US';
+
+			// Thiết lập nội dung cần đọc
+			speech.text = speechArray[line];
+
+			// Sử dụng hàm speechSynthesis.speak để phát âm đoạn văn bản
+			speechSynthesis.speak(speech);
+	  	}
+	</script>
+</head>
+<body class="bg-color">
+	<p class="p-title">ÔN TỪ VỰNG</p>
+	<div>
+		<div class="div-left"><input type="file" class="btn-addfile" onchange='openFile(event)'/></div>
+		<div class="div-right"><button class="btn-addfile" onclick="checkAllItem()">Kiểm tra</button></div>
+		<div class="div-content">
+			<table id="table">
+				<tr>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+</body>
+</html>
+
